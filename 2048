@@ -1,0 +1,99 @@
+# Guillaume
+# Jeu 2048
+
+import random
+
+# Définitions fonctions
+def affMat(tableau):
+    "Affiche un tableau dans IDLE, s'adapte à la taille des nombres"
+    n = len(tableau)
+    tabMaxi = []
+    for c in range(n):
+        maxi = 1
+        for l in range(n):
+            val = len(str(tableau[l][c]))
+            if val > maxi:
+                maxi = val
+        tabMaxi += [maxi]         
+    print('')
+    for l in range(n):
+        for c in range(n):
+            val = len(str(tableau[l][c]))
+            print(' '*(tabMaxi[c]-val), tableau[l][c], end = '')
+        print('')
+    print('')
+
+def reduire(liste):
+    '''Modifie la liste selon les règles du jeu.
+Exemple : [2,0,2,2]-->[4,2,0,0]'''
+    n = len(liste)
+    aux = [val for val in liste if val != 0]
+    for i in range(len(aux)-1):
+        if aux[i] == aux[i+1]:
+            aux[i] *= 2
+            aux[i+1] = 0
+    aux = [val for val in aux if val != 0]
+    aux += [0]*(n-len(aux))
+    liste[:] = aux
+
+def ajout2(tableau):
+    'Ajoute un 2 dans le tableau à une place libre (un 0) aléatoire'
+    coord = []
+    for i in range(len(tableau)):
+        for j in range(len(tableau[0])):
+            if tableau[i][j] == 0:
+                coord += [(i, j)]
+    coord2 = random.choice(coord)
+    tableau[coord2[0]][coord2[1]] = 2
+
+def reduire_W(tableau):
+    'Réduit le tableau vers la gauche'
+    for ligne in tableau:
+        reduire(ligne)
+
+def reduire_E(tableau):
+    'Réduit le tableau vers la droite'
+    for ligne in tableau:
+        ligne.reverse()
+        reduire(ligne)
+        ligne.reverse()
+
+def reduire_N(tableau):
+    'Réduit le tableau vers le haut'
+    for c in range(len(tableau[0])):
+        colonne = [ligne[c] for ligne in tableau]
+        reduire(colonne)
+        for i in range(len(colonne)):
+            tableau[i][c] = colonne[i]
+
+def reduire_S(tableau):
+    'Réduit le tableau vers le bas'
+    for c in range(len(tableau[0])):
+        colonne = [ligne[c] for ligne in tableau]
+        colonne.reverse()
+        reduire(colonne)
+        colonne.reverse()
+        for i in range(len(colonne)):
+            tableau[i][c] = colonne[i]
+    
+# Programme    
+taille = int(input("Nombre de lignes/colonnes pour cette partie : "))
+tab = [[0]*taille for k in range(taille)]
+ajout2(tab)
+print("\nEntrez Quit pour quitter. \nBonne chance !")
+jouer = True
+while jouer:
+    ajout2(tab)
+    affMat(tab)
+    choix = input("Donnez la direction de jeu (N, W, E, S) : ")
+    choix.upper()
+    if choix == "N":
+        reduire_N(tab)
+    if choix == "W":
+        reduire_W(tab)
+    if choix == "S":
+        reduire_S(tab)
+    if choix == "E":
+        reduire_E(tab)
+    if choix == "QUIT" or "Q":
+        jouer = False
